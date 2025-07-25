@@ -276,6 +276,7 @@ impl<const DOF: usize, E: RuckigErrorHandler> Ruckig<DOF, E> {
         output.new_calculation = false;
 
         if !self.current_input_initialized || *input != self.current_input {
+            println!("[Ruckig] Input changed, recalculating trajectory.");
             self.calculate(input, &mut output.trajectory)?;
 
             output.new_calculation = true;
@@ -299,6 +300,8 @@ impl<const DOF: usize, E: RuckigErrorHandler> Ruckig<DOF, E> {
         output.calculation_duration = (stop.duration_since(start).as_nanos() as f64) / 1000.0;
 
         output.pass_to_input(&mut self.current_input);
+
+        println!("[Ruckig] Update took {} ms", output.calculation_duration);
 
         if output.time > output.trajectory.get_duration() {
             return Ok(RuckigResult::Finished);

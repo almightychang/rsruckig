@@ -977,29 +977,6 @@ impl PositionThirdOrderStep1 {
     }
 
     pub fn get_profile(&mut self, input: &Profile, block: &mut Block) -> bool {
-        // Zero-limits special case
-        if self._j_max == 0.0 || self._a_max == 0.0 || self._a_min == 0.0 {
-            let p = &mut block.p_min;
-            p.set_boundary_from_profile(input);
-
-            if self.time_all_single_step(
-                p,
-                self._v_max,
-                self._v_min,
-                self._a_max,
-                self._a_min,
-                self._j_max,
-            ) {
-                // [p.t_sum.len() - 1] instead of C++ back()
-                block.t_min = p.t_sum[p.t_sum.len() - 1] + p.brake.duration + p.accel.duration;
-                if f64::abs(self.v0) > f64::EPSILON || f64::abs(self.a0) > f64::EPSILON {
-                    block.a = Some(Interval::new(block.t_min, f64::INFINITY));
-                }
-                return true;
-            }
-            return false;
-        }
-
         self.valid_profiles[0].set_boundary_from_profile(input);
         self.current_index = 0;
 
